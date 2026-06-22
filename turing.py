@@ -190,7 +190,11 @@ def main():
     print("SISTEM KOMUNIKASI MORSE + ASCII + DEKRIPSI MESIN TURING")
     print("=" * 70)
 
-    pesan = input("Masukkan pesan teks: ")
+    pesan = input("Masukkan pesan teks: ").strip()
+
+    if pesan == "":
+        print("Input tidak valid! Pesan tidak boleh kosong.")
+        return
 
     print("\n=== PROSES PENGIRIM ===")
 
@@ -227,7 +231,6 @@ def main():
     print("\n=== HASIL AKHIR ===")
     print(f"Pesan asli      : {pesan.upper()}")
     print(f"Pesan diterima  : {restored_text}")
-
 
 if __name__ == "__main__":
     main()
