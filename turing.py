@@ -1,7 +1,3 @@
-# ==========================================================
-# SISTEM KOMUNIKASI MORSE + ASCII + BITWISE NOT + MESIN TURING
-# ==========================================================
-
 # Dictionary alfabet ke sandi Morse
 MORSE_CODE = {
     "A": ".-",    "B": "-...",  "C": "-.-.",  "D": "-..",
@@ -20,16 +16,9 @@ MORSE_CODE = {
 # Dictionary kebalikan Morse ke alfabet
 TEXT_CODE = {value: key for key, value in MORSE_CODE.items()}
 
-
-# ==========================================================
 # 1. KONVERSI TEKS KE MORSE
-# ==========================================================
 
 def text_to_morse(text):
-    """
-    Mengubah teks alfabet menjadi sandi Morse.
-    Spasi antar kata ditandai dengan simbol '/'.
-    """
     text = text.upper()
     morse_result = []
 
@@ -43,21 +32,9 @@ def text_to_morse(text):
 
     return " ".join(morse_result)
 
-
-# ==========================================================
 # 2. KONVERSI MORSE KE ASCII BINER
-# ==========================================================
 
 def morse_to_ascii_binary(morse):
-    """
-    Mengubah string Morse menjadi biner ASCII 8-bit.
-
-    Contoh:
-    '.'  -> ASCII 46 -> 00101110
-    '-'  -> ASCII 45 -> 00101101
-    ' '  -> ASCII 32 -> 00100000
-    '/'  -> ASCII 47 -> 00101111
-    """
     binary_result = ""
 
     for char in morse:
@@ -67,17 +44,9 @@ def morse_to_ascii_binary(morse):
 
     return binary_result
 
-
-# ==========================================================
 # 3. ENKRIPSI BITWISE NOT
-# ==========================================================
 
 def bitwise_not(binary_data):
-    """
-    Membalik bit:
-    1 menjadi 0
-    0 menjadi 1
-    """
     result = ""
 
     for bit in binary_data:
@@ -90,21 +59,9 @@ def bitwise_not(binary_data):
 
     return result
 
-
-# ==========================================================
 # 4. MESIN TURING UNTUK DEKRIPSI BIT INVERTER
-# ==========================================================
 
 class TuringMachineBitInverter:
-    """
-    Mesin Turing membaca pita berisi data terenkripsi.
-    Mesin membalik setiap bit:
-    0 -> 1
-    1 -> 0
-
-    Mesin berhenti ketika membaca simbol blank B.
-    """
-
     def __init__(self, tape):
         self.tape = list(tape) + ["B"]
         self.head = 0
@@ -132,15 +89,9 @@ class TuringMachineBitInverter:
 
         return "".join(self.tape).replace("B", "")
 
-
-# ==========================================================
 # 5. KONVERSI ASCII BINER KE MORSE
-# ==========================================================
 
 def ascii_binary_to_morse(binary_data):
-    """
-    Mengubah biner ASCII 8-bit kembali menjadi string Morse.
-    """
     if len(binary_data) % 8 != 0:
         raise ValueError("Panjang data biner ASCII harus kelipatan 8.")
 
@@ -154,15 +105,9 @@ def ascii_binary_to_morse(binary_data):
 
     return morse_result
 
-
-# ==========================================================
 # 6. KONVERSI MORSE KE TEKS
-# ==========================================================
 
 def morse_to_text(morse):
-    """
-    Mengubah sandi Morse kembali menjadi teks alfabet.
-    """
     words = morse.split(" / ")
     text_words = []
 
@@ -180,10 +125,7 @@ def morse_to_text(morse):
 
     return " ".join(text_words)
 
-
-# ==========================================================
-# 7. PROGRAM UTAMA
-# ==========================================================
+# 7. PROGRAM MENU
 
 def main():
     print("=" * 70)
