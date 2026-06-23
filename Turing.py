@@ -1,82 +1,178 @@
-MORSE_TO_TEXT = {
-    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
-    '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
-    '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
-    '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
-    '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
-    '--..': 'Z'
+# Dictionary alfabet ke sandi Morse
+MORSE_CODE = {
+    "A": ".-",    "B": "-...",  "C": "-.-.",  "D": "-..",
+    "E": ".",     "F": "..-.",  "G": "--.",   "H": "....",
+    "I": "..",    "J": ".---",  "K": "-.-",   "L": ".-..",
+    "M": "--",    "N": "-.",    "O": "---",   "P": ".--.",
+    "Q": "--.-",  "R": ".-.",   "S": "...",   "T": "-",
+    "U": "..-",   "V": "...-",  "W": ".--",   "X": "-..-",
+    "Y": "-.--",  "Z": "--..",
+
+    "0": "-----", "1": ".----", "2": "..---", "3": "...--",
+    "4": "....-", "5": ".....", "6": "-....", "7": "--...",
+    "8": "---..", "9": "----."
 }
 
-# ==========================================
-# 2. FUNGSI-FUNGSI KONVERSI
-# ==========================================
-def morse_to_text(morse_str):
-    huruf_morse = morse_str.split(" ")
-    decoded_text = ""
-    for huruf in huruf_morse:
-        if huruf in MORSE_TO_TEXT:
-            decoded_text += MORSE_TO_TEXT[huruf]
-    return decoded_text
+# Dictionary kebalikan Morse ke alfabet
+TEXT_CODE = {value: key for key, value in MORSE_CODE.items()}
 
-def text_to_ascii_binary(text):
-    """Mengubah Teks menjadi array biner ASCII (8-bit per karakter)"""
-    binary_tape = []
+# 1. KONVERSI TEKS KE MORSE
+
+def text_to_morse(text):
+    text = text.upper()
+    morse_result = []
+
     for char in text:
-        bin_str = format(ord(char), '08b')
-        for bit in bin_str:
-            binary_tape.append(int(bit))
-    return binary_tape
+        if char == " ":
+            morse_result.append("/")
+        elif char in MORSE_CODE:
+            morse_result.append(MORSE_CODE[char])
+        else:
+            raise ValueError(f"Karakter '{char}' tidak tersedia dalam kode Morse.")
 
-def ascii_binary_to_text(binary_tape):
-    """Membaca array biner ASCII dan menerjemahkannya kembali ke teks"""
-    decoded_text = ""
-    for i in range(0, len(binary_tape), 8):
-        byte_array = binary_tape[i:i+8]
-        byte_str = "".join(str(bit) for bit in byte_array)
-        decoded_text += chr(int(byte_str, 2))
-    return decoded_text
+    return " ".join(morse_result)
 
-# ==========================================
-# 3. FUNGSI MESIN TURING (INVERSI BIT)
-# ==========================================
-def turing_inverter(tape):
-    """Mesin Turing membalik bit (1 ke 0, 0 ke 1)"""
-    inverted_tape = []
-    for bit in tape:
-        inverted_tape.append(1 if bit == 0 else 0)
-    return inverted_tape
+# 2. KONVERSI MORSE KE ASCII BINER
 
-# ==========================================
-# PROGRAM UTAMA (SIMULASI ALUR GABUNGAN)
-# ==========================================
+def morse_to_ascii_binary(morse):
+    binary_result = ""
+
+    for char in morse:
+        ascii_value = ord(char)
+        binary_char = format(ascii_value, "08b")
+        binary_result += binary_char
+
+    return binary_result
+
+# 3. ENKRIPSI BITWISE NOT
+
+def bitwise_not(binary_data):
+    result = ""
+
+    for bit in binary_data:
+        if bit == "1":
+            result += "0"
+        elif bit == "0":
+            result += "1"
+        else:
+            raise ValueError("Data biner hanya boleh berisi 0 dan 1.")
+
+    return result
+
+# 4. MESIN TURING UNTUK DEKRIPSI BIT INVERTER
+
+class TuringMachineBitInverter:
+    def __init__(self, tape):
+        self.tape = list(tape) + ["B"]
+        self.head = 0
+        self.state = "q0"
+
+    def step(self):
+        current_symbol = self.tape[self.head]
+
+        if self.state == "q0":
+            if current_symbol == "0":
+                self.tape[self.head] = "1"
+                self.head += 1
+
+            elif current_symbol == "1":
+                self.tape[self.head] = "0"
+                self.head += 1
+
+            elif current_symbol == "B":
+                self.head += 1
+                self.state = "q_accept"
+
+    def run(self):
+        while self.state != "q_accept":
+            self.step()
+
+        return "".join(self.tape).replace("B", "")
+
+# 5. KONVERSI ASCII BINER KE MORSE
+
+def ascii_binary_to_morse(binary_data):
+    if len(binary_data) % 8 != 0:
+        raise ValueError("Panjang data biner ASCII harus kelipatan 8.")
+
+    morse_result = ""
+
+    for i in range(0, len(binary_data), 8):
+        byte = binary_data[i:i+8]
+        ascii_value = int(byte, 2)
+        char = chr(ascii_value)
+        morse_result += char
+
+    return morse_result
+
+# 6. KONVERSI MORSE KE TEKS
+
+def morse_to_text(morse):
+    words = morse.split(" / ")
+    text_words = []
+
+    for word in words:
+        letters = word.split()
+        text = ""
+
+        for letter in letters:
+            if letter in TEXT_CODE:
+                text += TEXT_CODE[letter]
+            else:
+                raise ValueError(f"Kode Morse '{letter}' tidak dikenali.")
+
+        text_words.append(text)
+
+    return " ".join(text_words)
+
+# 7. PROGRAM MENU
+
+def main():
+    print("=" * 70)
+    print("SISTEM KOMUNIKASI MORSE + ASCII + DEKRIPSI MESIN TURING")
+    print("=" * 70)
+
+    pesan = input("Masukkan pesan teks: ").strip()
+
+    if pesan == "":
+        print("Input tidak valid! Pesan tidak boleh kosong.")
+        return
+
+    print("\n=== PROSES PENGIRIM ===")
+
+    morse = text_to_morse(pesan)
+    print("1. Teks ke Morse:")
+    print(morse)
+
+    ascii_binary = morse_to_ascii_binary(morse)
+    print("\n2. Morse ke ASCII Biner:")
+    print(ascii_binary)
+
+    encrypted_data = bitwise_not(ascii_binary)
+    print("\n3. Enkripsi Bitwise NOT:")
+    print(encrypted_data)
+
+    print("\n=== DATA DIKIRIM KE PENERIMA ===")
+    print(encrypted_data)
+
+    print("\n=== PROSES PENERIMA ===")
+
+    tm = TuringMachineBitInverter(encrypted_data)
+    decrypted_binary = tm.run()
+    print("4. Dekripsi menggunakan Mesin Turing:")
+    print(decrypted_binary)
+
+    restored_morse = ascii_binary_to_morse(decrypted_binary)
+    print("\n5. ASCII Biner ke Morse:")
+    print(restored_morse)
+
+    restored_text = morse_to_text(restored_morse)
+    print("\n6. Morse ke Teks:")
+    print(restored_text)
+
+    print("\n=== HASIL AKHIR ===")
+    print(f"Pesan asli      : {pesan.upper()}")
+    print(f"Pesan diterima  : {restored_text}")
+
 if __name__ == "__main__":
-    print("="*60)
-    print("SIMULASI MESIN TURING: KRIPTOGRAFI MORSE -> ASCII")
-    print("="*60)
-    
-    # 1. Input Morse
-    input_morse = input("1. Masukkan Sandi Morse (pisahkan dgn spasi) : ")
-    
-    # 2. Morse -> Teks
-    teks_awal = morse_to_text(input_morse)
-    print(f"   [Diterjemahkan ke Teks] : {teks_awal}")
-    
-    # 3. Teks -> Biner ASCII
-    biner_normal = text_to_ascii_binary(teks_awal)
-    print("\n2. Konversi ke Biner ASCII (Normal) :")
-    print("   ", biner_normal)
-    
-    # 4. Enkripsi (Inversi)
-    biner_enkripsi = turing_inverter(biner_normal)
-    print("\n3. Hasil Inversi (Biner Terenkripsi / Rahasia) :")
-    print("   ", biner_enkripsi)
-    
-    # 5. Mesin Turing Bekerja (Dekripsi)
-    print("\n   [Mesin Turing Penerima Sedang Mendekripsi...]")
-    biner_dekripsi = turing_inverter(biner_enkripsi)
-    
-    # 6. Biner ASCII -> Teks
-    hasil_teks = ascii_binary_to_text(biner_dekripsi)
-    print("\n4. Hasil Terjemahan Akhir (Pesan Diterima) :")
-    print("   ", hasil_teks)
-    print("="*60)
+    main()
